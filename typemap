@@ -1,0 +1,29 @@
+TYPEMAP
+
+Fragmento *					O_OBJECT
+LirBuffer *					O_OBJECT
+Fragment *					O_OBJECT
+LirBufWriter *				O_OBJECT
+LIns *						O_OBJECT
+LOpcode						T_IV
+uint32_t					T_UV
+int32_t						T_IV
+uint64_t					T_UV
+Devel::NanoJIT::Function	T_PTROBJ
+
+OUTPUT
+
+# The Perl object is blessed into 'CLASS', which should be a
+# char* having the name of the package for the blessing.
+O_OBJECT
+	sv_setref_pv( $arg, CLASS, (void*)$var );
+
+INPUT
+
+O_OBJECT
+	if( sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVMG) )
+		$var = ($type)SvIV((SV*)SvRV( $arg ));
+	else {
+		warn( \"${Package}::$func_name() -- $var is not a blessed SV reference\" );
+		XSRETURN_UNDEF;
+    }
